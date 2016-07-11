@@ -20,6 +20,15 @@ $ composer require lokielse/aliyun-open-api-mns
 ## Usage
 
 ```php
+
+$client = new Aliyun\MNS\Client\Client($config['endpoint'], $config['key'], $config['secret']);
+
+/**
+ * @see Aliyun\MNS\Queue @queue
+ */ 
+$queue  = $client->getQueueRef($queueName);
+$queue->sendMessage(...);
+
 ```
 [官方文档](https://help.aliyun.com/document_detail/29573.html)
 
