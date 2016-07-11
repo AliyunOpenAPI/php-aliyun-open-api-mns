@@ -1,0 +1,45 @@
+{
+  "name": "lokielse/aliyun-open-api-mns",
+  "description": "The MNS SDK for Aliyun OpenAPI",
+  "keywords": [
+    "aliyun",
+    "mns",
+    "php",
+    "sdk"
+  ],
+  "homepage": "https://github.com/lokielse/aliyun-open-api-mns",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "lokielse",
+      "email": "lokielse@gmail.com",
+      "homepage": "http://lokielse.org",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "guzzlehttp/guzzle": "^6.2",
+    "guzzlehttp/psr7": "^1.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Aliyun\\MNS\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Aliyun\\MNS\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "extra": {
+    "branch-alias": {
+    }
+  }
+}
