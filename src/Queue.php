@@ -179,9 +179,9 @@ class Queue
      * @throws MessageNotExistException if no message exists in the queue
      * @throws MnsException if any other exception happends
      */
-    public function receiveMessage()
+    public function receiveMessage($waitSeconds = null)
     {
-        $request  = new ReceiveMessageRequest($this->queueName);
+        $request  = new ReceiveMessageRequest($this->queueName, $waitSeconds);
         $response = new ReceiveMessageResponse();
 
         return $this->client->sendRequest($request, $response);
