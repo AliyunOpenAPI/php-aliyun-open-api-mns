@@ -21,7 +21,7 @@ $ composer require lokielse/aliyun-open-api-mns
 
 ```php
 
-$client = new Aliyun\MNS\Client\Client($config['endpoint'], $config['key'], $config['secret']);
+$client = new Aliyun\MNS\Client($config['endpoint'], $config['key'], $config['secret']);
 
 /**
  * @see Aliyun\MNS\Queue @queue
