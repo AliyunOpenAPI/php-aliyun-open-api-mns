@@ -1,37 +1,30 @@
 <?php
-
 namespace Aliyun\MNS\Requests;
 
 use Aliyun\MNS\Constants;
 
 class BatchDeleteMessageRequest extends BaseRequest
 {
-
     private $queueName;
-
     private $receiptHandles;
-
 
     public function __construct($queueName, array $receiptHandles)
     {
         parent::__construct('delete', 'queues/' . $queueName . '/messages');
 
-        $this->queueName      = $queueName;
+        $this->queueName = $queueName;
         $this->receiptHandles = $receiptHandles;
     }
-
 
     public function getQueueName()
     {
         return $this->queueName;
     }
 
-
     public function getReceiptHandles()
     {
         return $this->receiptHandles;
     }
-
 
     public function generateBody()
     {
@@ -44,13 +37,13 @@ class BatchDeleteMessageRequest extends BaseRequest
         }
         $xmlWriter->endElement();
         $xmlWriter->endDocument();
-
         return $xmlWriter->outputMemory();
     }
-
 
     public function generateQueryString()
     {
         return null;
     }
 }
+
+?>

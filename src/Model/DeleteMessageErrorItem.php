@@ -1,31 +1,25 @@
 <?php
-
 namespace Aliyun\MNS\Model;
 
 use Aliyun\MNS\Constants;
 
 class DeleteMessageErrorItem
 {
-
     protected $errorCode;
-
     protected $errorMessage;
-
     protected $receiptHandle;
-
 
     public function __construct($errorCode, $errorMessage, $receiptHandle)
     {
-        $this->errorCode     = $errorCode;
-        $this->errorMessage  = $errorMessage;
+        $this->errorCode = $errorCode;
+        $this->errorMessage = $errorMessage;
         $this->receiptHandle = $receiptHandle;
     }
 
-
     static public function fromXML($xmlReader)
     {
-        $errorCode     = null;
-        $errorMessage  = null;
+        $errorCode = null;
+        $errorMessage = null;
         $receiptHandle = null;
 
         while ($xmlReader->read()) {
@@ -63,21 +57,20 @@ class DeleteMessageErrorItem
         return new DeleteMessageErrorItem($errorCode, $errorMessage, $receiptHandle);
     }
 
-
     public function getErrorCode()
     {
         return $this->errorCode;
     }
-
 
     public function getErrorMessage()
     {
         return $this->errorMessage;
     }
 
-
     public function getReceiptHandle()
     {
         return $this->receiptHandle;
     }
 }
+
+?>

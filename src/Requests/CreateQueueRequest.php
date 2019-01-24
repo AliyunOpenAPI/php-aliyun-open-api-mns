@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Requests;
 
 use Aliyun\MNS\Constants;
@@ -7,11 +6,8 @@ use Aliyun\MNS\Model\QueueAttributes;
 
 class CreateQueueRequest extends BaseRequest
 {
-
     private $queueName;
-
     private $attributes;
-
 
     public function __construct($queueName, QueueAttributes $attributes = null)
     {
@@ -21,22 +17,19 @@ class CreateQueueRequest extends BaseRequest
             $attributes = new QueueAttributes;
         }
 
-        $this->queueName  = $queueName;
+        $this->queueName = $queueName;
         $this->attributes = $attributes;
     }
-
 
     public function getQueueName()
     {
         return $this->queueName;
     }
 
-
     public function getQueueAttributes()
     {
         return $this->attributes;
     }
-
 
     public function generateBody()
     {
@@ -47,13 +40,13 @@ class CreateQueueRequest extends BaseRequest
         $this->attributes->writeXML($xmlWriter);
         $xmlWriter->endElement();
         $xmlWriter->endDocument();
-
         return $xmlWriter->outputMemory();
     }
-
 
     public function generateQueryString()
     {
         return null;
     }
 }
+
+?>

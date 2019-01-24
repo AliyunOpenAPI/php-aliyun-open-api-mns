@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Model;
 
 use Aliyun\MNS\Constants;
@@ -11,67 +10,64 @@ use Aliyun\MNS\Constants;
  */
 class QueueAttributes
 {
-
-    public $activeMessages;
-
-    public $inactiveMessages;
-
-    public $delayMessages;
-
     private $delaySeconds;
-
     private $maximumMessageSize;
+    private $messageRetentionPeriod;
+    private $visibilityTimeout;
+    private $pollingWaitSeconds;
+    private $LoggingEnabled;
 
     # the following attributes cannot be changed
-
-    private $messageRetentionPeriod;
-
-    private $visibilityTimeout;
-
-    private $pollingWaitSeconds;
-
-    /*
-     * 2016-02-02
-     * 注意: 阿里云提供的接口为private属性, 为便于查询修改为public
-     */
-
     private $queueName;
-
     private $createTime;
-
     private $lastModifyTime;
+    private $activeMessages;
+    private $inactiveMessages;
+    private $delayMessages;
 
-
-    public function __construct($delaySeconds = null, $maximumMessageSize = null, $messageRetentionPeriod = null, $visibilityTimeout = null, $pollingWaitSeconds = null, $queueName = null, $createTime = null, $lastModifyTime = null, $activeMessages = null, $inactiveMessages = null, $delayMessages = null)
-    {
-        $this->delaySeconds           = $delaySeconds;
-        $this->maximumMessageSize     = $maximumMessageSize;
+    public function __construct(
+        $delaySeconds = null,
+        $maximumMessageSize = null,
+        $messageRetentionPeriod = null,
+        $visibilityTimeout = null,
+        $pollingWaitSeconds = null,
+        $queueName = null,
+        $createTime = null,
+        $lastModifyTime = null,
+        $activeMessages = null,
+        $inactiveMessages = null,
+        $delayMessages = null,
+        $LoggingEnabled = null
+    ) {
+        $this->delaySeconds = $delaySeconds;
+        $this->maximumMessageSize = $maximumMessageSize;
         $this->messageRetentionPeriod = $messageRetentionPeriod;
-        $this->visibilityTimeout      = $visibilityTimeout;
-        $this->pollingWaitSeconds     = $pollingWaitSeconds;
+        $this->visibilityTimeout = $visibilityTimeout;
+        $this->pollingWaitSeconds = $pollingWaitSeconds;
+        $this->loggingEnabled = $LoggingEnabled;
 
-        $this->queueName        = $queueName;
-        $this->createTime       = $createTime;
-        $this->lastModifyTime   = $lastModifyTime;
-        $this->activeMessages   = $activeMessages;
+        $this->queueName = $queueName;
+        $this->createTime = $createTime;
+        $this->lastModifyTime = $lastModifyTime;
+        $this->activeMessages = $activeMessages;
         $this->inactiveMessages = $inactiveMessages;
-        $this->delayMessages    = $delayMessages;
+        $this->delayMessages = $delayMessages;
     }
-
 
     static public function fromXML(\XMLReader $xmlReader)
     {
-        $delaySeconds           = null;
-        $maximumMessageSize     = null;
+        $delaySeconds = null;
+        $maximumMessageSize = null;
         $messageRetentionPeriod = null;
-        $visibilityTimeout      = null;
-        $pollingWaitSeconds     = null;
-        $queueName              = null;
-        $createTime             = null;
-        $lastModifyTime         = null;
-        $activeMessages         = null;
-        $inactiveMessages       = null;
-        $delayMessages          = null;
+        $visibilityTimeout = null;
+        $pollingWaitSeconds = null;
+        $queueName = null;
+        $createTime = null;
+        $lastModifyTime = null;
+        $activeMessages = null;
+        $inactiveMessages = null;
+        $delayMessages = null;
+        $loggingEnabled = null;
 
         while ($xmlReader->read()) {
             if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
@@ -142,111 +138,126 @@ class QueueAttributes
                             $delayMessages = $xmlReader->value;
                         }
                         break;
+                    case 'LoggingEnabled':
+                        $xmlReader->read();
+                        if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                            $loggingEnabled = $xmlReader->value;
+                            if ($loggingEnabled == "True") {
+                                $loggingEnabled = true;
+                            } else {
+                                $loggingEnabled = false;
+                            }
+                        }
+                        break;
                 }
             }
         }
 
-        $attributes = new QueueAttributes($delaySeconds, $maximumMessageSize, $messageRetentionPeriod, $visibilityTimeout, $pollingWaitSeconds, $queueName, $createTime, $lastModifyTime, $activeMessages, $inactiveMessages, $delayMessages);
-
+        $attributes = new QueueAttributes(
+            $delaySeconds,
+            $maximumMessageSize,
+            $messageRetentionPeriod,
+            $visibilityTimeout,
+            $pollingWaitSeconds,
+            $queueName,
+            $createTime,
+            $lastModifyTime,
+            $activeMessages,
+            $inactiveMessages,
+            $delayMessages,
+            $loggingEnabled);
         return $attributes;
     }
-
 
     public function getDelaySeconds()
     {
         return $this->delaySeconds;
     }
 
-
     public function setDelaySeconds($delaySeconds)
     {
         $this->delaySeconds = $delaySeconds;
     }
 
+    public function getLoggingEnabled()
+    {
+        return $this->loggingEnabled;
+    }
+
+    public function setLoggingEnabled($loggingEnabled)
+    {
+        $this->loggingEnabled = $loggingEnabled;
+    }
 
     public function getMaximumMessageSize()
     {
         return $this->maximumMessageSize;
     }
 
-
     public function setMaximumMessageSize($maximumMessageSize)
     {
         $this->maximumMessageSize = $maximumMessageSize;
     }
-
 
     public function getMessageRetentionPeriod()
     {
         return $this->messageRetentionPeriod;
     }
 
-
     public function setMessageRetentionPeriod($messageRetentionPeriod)
     {
         $this->messageRetentionPeriod = $messageRetentionPeriod;
     }
-
 
     public function getVisibilityTimeout()
     {
         return $this->visibilityTimeout;
     }
 
-
     public function setVisibilityTimeout($visibilityTimeout)
     {
         $this->visibilityTimeout = $visibilityTimeout;
     }
-
 
     public function getPollingWaitSeconds()
     {
         return $this->pollingWaitSeconds;
     }
 
-
     public function setPollingWaitSeconds($pollingWaitSeconds)
     {
         $this->pollingWaitSeconds = $pollingWaitSeconds;
     }
-
 
     public function getQueueName()
     {
         return $this->queueName;
     }
 
-
     public function getCreateTime()
     {
         return $this->createTime;
     }
-
 
     public function getLastModifyTime()
     {
         return $this->lastModifyTime;
     }
 
-
     public function getActiveMessages()
     {
         return $this->activeMessages;
     }
-
 
     public function getInactiveMessages()
     {
         return $this->inactiveMessages;
     }
 
-
     public function getDelayMessages()
     {
         return $this->delayMessages;
     }
-
 
     public function writeXML(\XMLWriter $xmlWriter)
     {
@@ -265,5 +276,10 @@ class QueueAttributes
         if ($this->pollingWaitSeconds != null) {
             $xmlWriter->writeElement(Constants::POLLING_WAIT_SECONDS, $this->pollingWaitSeconds);
         }
+        if ($this->loggingEnabled !== null) {
+            $xmlWriter->writeElement(Constants::LOGGING_ENABLED, $this->loggingEnabled ? "True" : "False");
+        }
     }
 }
+
+?>

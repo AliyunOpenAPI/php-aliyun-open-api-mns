@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use GuzzleHttp\Exception\TransferException;
@@ -8,30 +7,24 @@ use Psr\Http\Message\ResponseInterface;
 
 class MnsPromise
 {
-
     private $response;
-
     private $promise;
-
 
     public function __construct(PromiseInterface &$promise, BaseResponse &$response)
     {
-        $this->promise  = $promise;
+        $this->promise = $promise;
         $this->response = $response;
     }
-
 
     public function isCompleted()
     {
         return $this->promise->getState() != 'pending';
     }
 
-
     public function getResponse()
     {
         return $this->response;
     }
-
 
     public function wait()
     {
@@ -47,7 +40,8 @@ class MnsPromise
             }
             $this->response->parseErrorResponse($e->getCode(), $message);
         }
-
         return $this->response;
     }
 }
+
+?>

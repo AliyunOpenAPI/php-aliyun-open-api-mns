@@ -1,16 +1,11 @@
 <?php
-
 namespace Aliyun\MNS\Requests;
 
 class ListQueueRequest extends BaseRequest
 {
-
     private $retNum;
-
     private $prefix;
-
     private $marker;
-
 
     public function __construct($retNum = null, $prefix = null, $marker = null)
     {
@@ -21,12 +16,10 @@ class ListQueueRequest extends BaseRequest
         $this->setMarker($marker);
     }
 
-
     public function getRetNum()
     {
         return $this->retNum;
     }
-
 
     public function setRetNum($retNum)
     {
@@ -38,12 +31,10 @@ class ListQueueRequest extends BaseRequest
         }
     }
 
-
     public function getPrefix()
     {
         return $this->prefix;
     }
-
 
     public function setPrefix($prefix)
     {
@@ -55,12 +46,10 @@ class ListQueueRequest extends BaseRequest
         }
     }
 
-
     public function getMarker()
     {
         return $this->marker;
     }
-
 
     public function setMarker($marker)
     {
@@ -72,15 +61,15 @@ class ListQueueRequest extends BaseRequest
         }
     }
 
-
     public function generateBody()
     {
         return null;
     }
-
 
     public function generateQueryString()
     {
         return null;
     }
 }
+
+?>

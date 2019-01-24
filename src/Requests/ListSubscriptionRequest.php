@@ -1,21 +1,19 @@
 <?php
-
 namespace Aliyun\MNS\Requests;
 
 class ListSubscriptionRequest extends BaseRequest
 {
-
     private $topicName;
-
     private $retNum;
-
     private $prefix;
-
     private $marker;
 
-
-    public function __construct($topicName, $retNum = null, $prefix = null, $marker = null)
-    {
+    public function __construct(
+        $topicName,
+        $retNum = null,
+        $prefix = null,
+        $marker = null
+    ) {
         parent::__construct('get', 'topics/' . $topicName . '/subscriptions');
 
         $this->topicName = $topicName;
@@ -24,18 +22,15 @@ class ListSubscriptionRequest extends BaseRequest
         $this->setMarker($marker);
     }
 
-
     public function getTopicName()
     {
         return $this->topicName;
     }
 
-
     public function getRetNum()
     {
         return $this->retNum;
     }
-
 
     public function setRetNum($retNum)
     {
@@ -47,12 +42,10 @@ class ListSubscriptionRequest extends BaseRequest
         }
     }
 
-
     public function getPrefix()
     {
         return $this->prefix;
     }
-
 
     public function setPrefix($prefix)
     {
@@ -64,12 +57,10 @@ class ListSubscriptionRequest extends BaseRequest
         }
     }
 
-
     public function getMarker()
     {
         return $this->marker;
     }
-
 
     public function setMarker($marker)
     {
@@ -81,15 +72,15 @@ class ListSubscriptionRequest extends BaseRequest
         }
     }
 
-
     public function generateBody()
     {
         return null;
     }
-
 
     public function generateQueryString()
     {
         return null;
     }
 }
+
+?>

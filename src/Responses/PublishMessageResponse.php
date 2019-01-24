@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use Aliyun\MNS\Common\XMLParser;
@@ -12,14 +11,11 @@ use Aliyun\MNS\Traits\MessageIdAndMD5;
 
 class PublishMessageResponse extends BaseResponse
 {
-
     use MessageIdAndMD5;
-
 
     public function __construct()
     {
     }
-
 
     public function parseResponse($statusCode, $content)
     {
@@ -30,9 +26,8 @@ class PublishMessageResponse extends BaseResponse
             $this->parseErrorResponse($statusCode, $content);
         }
 
-        $xmlReader = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $this->readMessageIdAndMD5XML($xmlReader);
         } catch (\Exception $e) {
             throw new MnsException($statusCode, $e->getMessage(), $e);
@@ -42,24 +37,26 @@ class PublishMessageResponse extends BaseResponse
 
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
             if ($result['Code'] == Constants::TOPIC_NOT_EXIST) {
-                throw new TopicNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new TopicNotExistException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
             if ($result['Code'] == Constants::INVALID_ARGUMENT) {
-                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
             if ($result['Code'] == Constants::MALFORMED_XML) {
-                throw new MalformedXMLException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new MalformedXMLException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
-            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+                $result['HostId']);
         } catch (\Exception $e) {
             if ($exception != null) {
                 throw $exception;
@@ -73,3 +70,5 @@ class PublishMessageResponse extends BaseResponse
         }
     }
 }
+
+?>

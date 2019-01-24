@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use Aliyun\MNS\Common\XMLParser;
@@ -11,11 +10,9 @@ use Aliyun\MNS\Exception\ReceiptHandleErrorException;
 
 class DeleteMessageResponse extends BaseResponse
 {
-
     public function __construct()
     {
     }
-
 
     public function parseResponse($statusCode, $content)
     {
@@ -27,26 +24,29 @@ class DeleteMessageResponse extends BaseResponse
         }
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
 
             if ($result['Code'] == Constants::INVALID_ARGUMENT) {
-                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
             if ($result['Code'] == Constants::QUEUE_NOT_EXIST) {
-                throw new QueueNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new QueueNotExistException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
             if ($result['Code'] == Constants::RECEIPT_HANDLE_ERROR) {
-                throw new ReceiptHandleErrorException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new ReceiptHandleErrorException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
 
-            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+                $result['HostId']);
         } catch (\Exception $e) {
             if ($exception != null) {
                 throw $exception;
@@ -60,3 +60,5 @@ class DeleteMessageResponse extends BaseResponse
         }
     }
 }
+
+?>

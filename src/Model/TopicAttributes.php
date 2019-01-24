@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Model;
 
 use Aliyun\MNS\Constants;
@@ -11,37 +10,40 @@ use Aliyun\MNS\Constants;
  */
 class TopicAttributes
 {
-
     private $maximumMessageSize;
-
     private $messageRetentionPeriod;
+    private $LoggingEnabled;
 
     # the following attributes cannot be changed
     private $topicName;
-
     private $createTime;
-
     private $lastModifyTime;
 
-
-    public function __construct($maximumMessageSize = null, $messageRetentionPeriod = null, $topicName = null, $createTime = null, $lastModifyTime = null)
-    {
-        $this->maximumMessageSize     = $maximumMessageSize;
+    public function __construct(
+        $maximumMessageSize = null,
+        $messageRetentionPeriod = null,
+        $topicName = null,
+        $createTime = null,
+        $lastModifyTime = null,
+        $LoggingEnabled = null
+    ) {
+        $this->maximumMessageSize = $maximumMessageSize;
         $this->messageRetentionPeriod = $messageRetentionPeriod;
+        $this->loggingEnabled = $LoggingEnabled;
 
-        $this->topicName      = $topicName;
-        $this->createTime     = $createTime;
+        $this->topicName = $topicName;
+        $this->createTime = $createTime;
         $this->lastModifyTime = $lastModifyTime;
     }
 
-
     static public function fromXML(\XMLReader $xmlReader)
     {
-        $maximumMessageSize     = null;
+        $maximumMessageSize = null;
         $messageRetentionPeriod = null;
-        $topicName              = null;
-        $createTime             = null;
-        $lastModifyTime         = null;
+        $topicName = null;
+        $createTime = null;
+        $lastModifyTime = null;
+        $loggingEnabled = null;
 
         while ($xmlReader->read()) {
             if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
@@ -76,57 +78,75 @@ class TopicAttributes
                             $lastModifyTime = $xmlReader->value;
                         }
                         break;
+                    case 'LoggingEnabled':
+                        $xmlReader->read();
+                        if ($xmlReader->nodeType == \XMLReader::TEXT) {
+                            $loggingEnabled = $xmlReader->value;
+                            if ($loggingEnabled == "True") {
+                                $loggingEnabled = true;
+                            } else {
+                                $loggingEnabled = false;
+                            }
+                        }
+                        break;
                 }
             }
         }
 
-        $attributes = new TopicAttributes($maximumMessageSize, $messageRetentionPeriod, $topicName, $createTime, $lastModifyTime);
-
+        $attributes = new TopicAttributes(
+            $maximumMessageSize,
+            $messageRetentionPeriod,
+            $topicName,
+            $createTime,
+            $lastModifyTime,
+            $loggingEnabled);
         return $attributes;
     }
-
 
     public function getMaximumMessageSize()
     {
         return $this->maximumMessageSize;
     }
 
-
     public function setMaximumMessageSize($maximumMessageSize)
     {
         $this->maximumMessageSize = $maximumMessageSize;
     }
 
+    public function getLoggingEnabled()
+    {
+        return $this->loggingEnabled;
+    }
+
+    public function setLoggingEnabled($loggingEnabled)
+    {
+        $this->loggingEnabled = $loggingEnabled;
+    }
 
     public function getMessageRetentionPeriod()
     {
         return $this->messageRetentionPeriod;
     }
 
-
     public function setMessageRetentionPeriod($messageRetentionPeriod)
     {
         $this->messageRetentionPeriod = $messageRetentionPeriod;
     }
-
 
     public function getTopicName()
     {
         return $this->topicName;
     }
 
-
     public function getCreateTime()
     {
         return $this->createTime;
     }
 
-
     public function getLastModifyTime()
     {
         return $this->lastModifyTime;
     }
-
 
     public function writeXML(\XMLWriter $xmlWriter)
     {
@@ -136,5 +156,10 @@ class TopicAttributes
         if ($this->messageRetentionPeriod != null) {
             $xmlWriter->writeElement(Constants::MESSAGE_RETENTION_PERIOD, $this->messageRetentionPeriod);
         }
+        if ($this->loggingEnabled !== null) {
+            $xmlWriter->writeElement(Constants::LOGGING_ENABLED, $this->loggingEnabled ? "True" : "False");
+        }
     }
 }
+
+?>

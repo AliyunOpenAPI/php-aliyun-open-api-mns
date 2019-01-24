@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Signature;
 
 use Aliyun\MNS\Constants;
@@ -7,21 +6,20 @@ use Aliyun\MNS\Requests\BaseRequest;
 
 class Signature
 {
-
     static public function SignRequest($accessKey, BaseRequest &$request)
     {
         $canonicalizedMNSHeaders = "";
-        $headers                 = $request->getHeaders();
-        $contentMd5              = "";
-        if (isset( $headers['Content-MD5'] )) {
+        $headers = $request->getHeaders();
+        $contentMd5 = "";
+        if (isset($headers['Content-MD5'])) {
             $contentMd5 = $headers['Content-MD5'];
         }
         $contentType = "";
-        if (isset( $headers['Content-Type'] )) {
+        if (isset($headers['Content-Type'])) {
             $contentType = $headers['Content-Type'];
         }
-        $date                  = $headers['Date'];
-        $queryString           = $request->getQueryString();
+        $date = $headers['Date'];
+        $queryString = $request->getQueryString();
         $canonicalizedResource = $request->getResourcePath();
         if ($queryString != null) {
             $canonicalizedResource .= "?" . $request->getQueryString();
@@ -47,3 +45,5 @@ class Signature
         return base64_encode(hash_hmac("sha1", $stringToSign, $accessKey, $raw_output = true));
     }
 }
+
+?>

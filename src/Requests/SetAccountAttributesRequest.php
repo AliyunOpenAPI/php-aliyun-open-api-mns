@@ -2,31 +2,24 @@
 namespace Aliyun\MNS\Requests;
 
 use Aliyun\MNS\Constants;
-use Aliyun\MNS\Model\QueueAttributes;
+use Aliyun\MNS\Model\AccountAttributes;
 
-class SetQueueAttributeRequest extends BaseRequest
+class SetAccountAttributesRequest extends BaseRequest
 {
-    private $queueName;
     private $attributes;
 
-    public function __construct($queueName, QueueAttributes $attributes = null)
+    public function __construct(AccountAttributes $attributes = null)
     {
-        parent::__construct('put', 'queues/' . $queueName . '?metaoverride=true');
+        parent::__construct('put', '/?accountmeta=true');
 
         if ($attributes == null) {
-            $attributes = new QueueAttributes;
+            $attributes = new AccountAttributes;
         }
 
-        $this->queueName = $queueName;
         $this->attributes = $attributes;
     }
 
-    public function getQueueName()
-    {
-        return $this->queueName;
-    }
-
-    public function getQueueAttributes()
+    public function getAccountAttributes()
     {
         return $this->attributes;
     }
@@ -36,7 +29,7 @@ class SetQueueAttributeRequest extends BaseRequest
         $xmlWriter = new \XMLWriter;
         $xmlWriter->openMemory();
         $xmlWriter->startDocument("1.0", "UTF-8");
-        $xmlWriter->startElementNS(null, "Queue", Constants::MNS_XML_NAMESPACE);
+        $xmlWriter->startElementNS(null, "Account", Constants::MNS_XML_NAMESPACE);
         $this->attributes->writeXML($xmlWriter);
         $xmlWriter->endElement();
         $xmlWriter->endDocument();

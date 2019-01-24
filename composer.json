@@ -30,11 +30,6 @@
       "Aliyun\\MNS\\": "src"
     }
   },
-  "autoload-dev": {
-    "psr-4": {
-      "Aliyun\\MNS\\Tests\\": "tests"
-    }
-  },
   "scripts": {
     "test": "phpunit"
   },
