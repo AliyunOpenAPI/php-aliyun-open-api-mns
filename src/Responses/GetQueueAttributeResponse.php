@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use Aliyun\MNS\Common\XMLParser;
@@ -10,21 +9,17 @@ use Aliyun\MNS\Model\QueueAttributes;
 
 class GetQueueAttributeResponse extends BaseResponse
 {
-
     private $attributes;
-
 
     public function __construct()
     {
         $this->attributes = null;
     }
 
-
     public function getQueueAttributes()
     {
         return $this->attributes;
     }
-
 
     public function parseResponse($statusCode, $content)
     {
@@ -35,9 +30,9 @@ class GetQueueAttributeResponse extends BaseResponse
             $this->parseErrorResponse($statusCode, $content);
         }
 
-        $xmlReader = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             $this->attributes = QueueAttributes::fromXML($xmlReader);
         } catch (\Exception $e) {
             throw new MnsException($statusCode, $e->getMessage(), $e);
@@ -47,18 +42,19 @@ class GetQueueAttributeResponse extends BaseResponse
 
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
             if ($result['Code'] == Constants::QUEUE_NOT_EXIST) {
-                throw new QueueNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new QueueNotExistException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
-            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+                $result['HostId']);
         } catch (\Exception $e) {
             if ($exception != null) {
                 throw $exception;
@@ -72,3 +68,5 @@ class GetQueueAttributeResponse extends BaseResponse
         }
     }
 }
+
+?>

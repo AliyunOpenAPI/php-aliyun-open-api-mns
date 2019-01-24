@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Requests;
 
 use Aliyun\MNS\Constants;
@@ -7,11 +6,8 @@ use Aliyun\MNS\Model\TopicAttributes;
 
 class SetTopicAttributeRequest extends BaseRequest
 {
-
     private $topicName;
-
     private $attributes;
-
 
     public function __construct($topicName, TopicAttributes $attributes = null)
     {
@@ -21,22 +17,19 @@ class SetTopicAttributeRequest extends BaseRequest
             $attributes = new TopicAttributes();
         }
 
-        $this->topicName  = $topicName;
+        $this->topicName = $topicName;
         $this->attributes = $attributes;
     }
-
 
     public function getTopicName()
     {
         return $this->topicName;
     }
 
-
     public function getTopicAttributes()
     {
         return $this->attributes;
     }
-
 
     public function generateBody()
     {
@@ -47,13 +40,13 @@ class SetTopicAttributeRequest extends BaseRequest
         $this->attributes->writeXML($xmlWriter);
         $xmlWriter->endElement();
         $xmlWriter->endDocument();
-
         return $xmlWriter->outputMemory();
     }
-
 
     public function generateQueryString()
     {
         return null;
     }
 }
+
+?>

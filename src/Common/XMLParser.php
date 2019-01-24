@@ -1,16 +1,14 @@
 <?php
-
 namespace Aliyun\MNS\Common;
 
 class XMLParser
 {
-
     /**
      * Most of the error responses are in same format.
      */
     static function parseNormalError(\XMLReader $xmlReader)
     {
-        $result = array( 'Code' => null, 'Message' => null, 'RequestId' => null, 'HostId' => null );
+        $result = array('Code' => null, 'Message' => null, 'RequestId' => null, 'HostId' => null);
         while ($xmlReader->Read()) {
             if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
                 switch ($xmlReader->name) {
@@ -41,7 +39,8 @@ class XMLParser
                 }
             }
         }
-
         return $result;
     }
 }
+
+?>

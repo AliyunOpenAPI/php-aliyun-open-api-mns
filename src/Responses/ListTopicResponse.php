@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use Aliyun\MNS\Common\XMLParser;
@@ -7,11 +6,8 @@ use Aliyun\MNS\Exception\MnsException;
 
 class ListTopicResponse extends BaseResponse
 {
-
     private $topicNames;
-
     private $nextMarker;
-
 
     public function __construct()
     {
@@ -19,45 +15,40 @@ class ListTopicResponse extends BaseResponse
         $this->nextMarker = null;
     }
 
-
     public function isFinished()
     {
         return $this->nextMarker == null;
     }
-
 
     public function getTopicNames()
     {
         return $this->topicNames;
     }
 
-
     public function getNextMarker()
     {
         return $this->nextMarker;
     }
-
 
     public function parseResponse($statusCode, $content)
     {
         $this->statusCode = $statusCode;
         if ($statusCode != 200) {
             $this->parseErrorResponse($statusCode, $content);
-
             return;
         }
 
         $this->succeed = true;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             while ($xmlReader->read()) {
                 if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
                     switch ($xmlReader->name) {
                         case 'TopicURL':
                             $xmlReader->read();
                             if ($xmlReader->nodeType == \XMLReader::TEXT) {
-                                $topicName          = $this->getTopicNameFromTopicURL($xmlReader->value);
+                                $topicName = $this->getTopicNameFromTopicURL($xmlReader->value);
                                 $this->topicNames[] = $topicName;
                             }
                             break;
@@ -77,16 +68,16 @@ class ListTopicResponse extends BaseResponse
         }
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
 
-            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+                $result['HostId']);
         } catch (\Exception $e) {
             if ($exception != null) {
                 throw $exception;
@@ -100,14 +91,14 @@ class ListTopicResponse extends BaseResponse
         }
     }
 
-
     private function getTopicNameFromTopicURL($topicURL)
     {
         $pieces = explode("/", $topicURL);
         if (count($pieces) == 5) {
             return $pieces[4];
         }
-
         return "";
     }
 }
+
+?>

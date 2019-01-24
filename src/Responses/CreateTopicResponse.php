@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use Aliyun\MNS\Common\XMLParser;
@@ -10,15 +9,12 @@ use Aliyun\MNS\Exception\TopicAlreadyExistException;
 
 class CreateTopicResponse extends BaseResponse
 {
-
     private $topicName;
-
 
     public function __construct($topicName)
     {
         $this->topicName = $topicName;
     }
-
 
     public function parseResponse($statusCode, $content)
     {
@@ -30,22 +26,24 @@ class CreateTopicResponse extends BaseResponse
         }
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
 
             if ($result['Code'] == Constants::INVALID_ARGUMENT) {
-                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
             if ($result['Code'] == Constants::TOPIC_ALREADY_EXIST) {
-                throw new TopicAlreadyExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new TopicAlreadyExistException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
-            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+                $result['HostId']);
         } catch (\Exception $e) {
             if ($exception != null) {
                 throw $exception;
@@ -59,9 +57,10 @@ class CreateTopicResponse extends BaseResponse
         }
     }
 
-
     public function getTopicName()
     {
         return $this->topicName;
     }
 }
+
+?>

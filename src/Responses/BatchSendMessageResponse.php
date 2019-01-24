@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use Aliyun\MNS\Common\XMLParser;
@@ -13,21 +12,17 @@ use Aliyun\MNS\Model\SendMessageResponseItem;
 
 class BatchSendMessageResponse extends BaseResponse
 {
-
     protected $sendMessageResponseItems;
-
 
     public function __construct()
     {
         $this->sendMessageResponseItems = array();
     }
 
-
     public function getSendMessageResponseItems()
     {
         return $this->sendMessageResponseItems;
     }
-
 
     public function parseResponse($statusCode, $content)
     {
@@ -38,12 +33,12 @@ class BatchSendMessageResponse extends BaseResponse
             $this->parseErrorResponse($statusCode, $content);
         }
 
-        $xmlReader = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             while ($xmlReader->read()) {
                 if ($xmlReader->nodeType == \XMLReader::ELEMENT && $xmlReader->name == 'Message') {
-                    $sendMessageResponseItems[] = SendMessageResponseItem::fromXML($xmlReader);
+                    $this->sendMessageResponseItems[] = SendMessageResponseItem::fromXML($xmlReader);
                 }
             }
         } catch (\Exception $e) {
@@ -53,13 +48,12 @@ class BatchSendMessageResponse extends BaseResponse
         }
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             while ($xmlReader->read()) {
                 if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
                     switch ($xmlReader->name) {
@@ -85,6 +79,24 @@ class BatchSendMessageResponse extends BaseResponse
         }
     }
 
+    private function parseNormalErrorResponse($xmlReader)
+    {
+        $result = XMLParser::parseNormalError($xmlReader);
+        if ($result['Code'] == Constants::QUEUE_NOT_EXIST) {
+            throw new QueueNotExistException($statusCode, $result['Message'], $exception, $result['Code'],
+                $result['RequestId'], $result['HostId']);
+        }
+        if ($result['Code'] == Constants::INVALID_ARGUMENT) {
+            throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'],
+                $result['RequestId'], $result['HostId']);
+        }
+        if ($result['Code'] == Constants::MALFORMED_XML) {
+            throw new MalformedXMLException($statusCode, $result['Message'], $exception, $result['Code'],
+                $result['RequestId'], $result['HostId']);
+        }
+        throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+            $result['HostId']);
+    }
 
     private function parseBatchSendErrorResponse($xmlReader)
     {
@@ -96,20 +108,6 @@ class BatchSendMessageResponse extends BaseResponse
         }
         throw $ex;
     }
-
-
-    private function parseNormalErrorResponse($xmlReader)
-    {
-        $result = XMLParser::parseNormalError($xmlReader);
-        if ($result['Code'] == Constants::QUEUE_NOT_EXIST) {
-            throw new QueueNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
-        }
-        if ($result['Code'] == Constants::INVALID_ARGUMENT) {
-            throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
-        }
-        if ($result['Code'] == Constants::MALFORMED_XML) {
-            throw new MalformedXMLException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
-        }
-        throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
-    }
 }
+
+?>

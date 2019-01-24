@@ -7,57 +7,49 @@ use Aliyun\MNS\Exception\MnsException;
 
 class ListSubscriptionResponse extends BaseResponse
 {
-
     private $SubscriptionNames;
-
     private $nextMarker;
-
 
     public function __construct()
     {
         $this->SubscriptionNames = array();
-        $this->nextMarker        = null;
+        $this->nextMarker = null;
     }
-
 
     public function isFinished()
     {
         return $this->nextMarker == null;
     }
 
-
     public function getSubscriptionNames()
     {
         return $this->SubscriptionNames;
     }
-
 
     public function getNextMarker()
     {
         return $this->nextMarker;
     }
 
-
     public function parseResponse($statusCode, $content)
     {
         $this->statusCode = $statusCode;
         if ($statusCode != 200) {
             $this->parseErrorResponse($statusCode, $content);
-
             return;
         }
 
         $this->succeed = true;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             while ($xmlReader->read()) {
                 if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
                     switch ($xmlReader->name) {
                         case 'SubscriptionURL':
                             $xmlReader->read();
                             if ($xmlReader->nodeType == \XMLReader::TEXT) {
-                                $subscriptionName          = $this->getSubscriptionNameFromSubscriptionURL($xmlReader->value);
+                                $subscriptionName = $this->getSubscriptionNameFromSubscriptionURL($xmlReader->value);
                                 $this->SubscriptionNames[] = $subscriptionName;
                             }
                             break;
@@ -77,16 +69,16 @@ class ListSubscriptionResponse extends BaseResponse
         }
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
 
-            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+                $result['HostId']);
         } catch (\Exception $e) {
             if ($exception != null) {
                 throw $exception;
@@ -100,14 +92,12 @@ class ListSubscriptionResponse extends BaseResponse
         }
     }
 
-
     private function getSubscriptionNameFromSubscriptionURL($subscriptionURL)
     {
         $pieces = explode("/", $subscriptionURL);
         if (count($pieces) == 7) {
             return $pieces[6];
         }
-
         return "";
     }
 }

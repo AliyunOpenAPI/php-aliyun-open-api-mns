@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Model;
 
 use Aliyun\MNS\Constants;
@@ -11,35 +10,30 @@ use Aliyun\MNS\Traits\MessageIdAndMD5;
  */
 class SendMessageResponseItem
 {
-
     use MessageIdAndMD5;
 
     protected $isSucceed;
-
     protected $errorCode;
-
     protected $errorMessage;
-
 
     public function __construct($isSucceed, $param1, $param2)
     {
         $this->isSucceed = $isSucceed;
         if ($isSucceed == true) {
-            $this->messageId      = $param1;
+            $this->messageId = $param1;
             $this->messageBodyMD5 = $param2;
         } else {
-            $this->errorCode    = $param1;
+            $this->errorCode = $param1;
             $this->errorMessage = $param2;
         }
     }
 
-
     static public function fromXML($xmlReader)
     {
-        $messageId      = null;
+        $messageId = null;
         $messageBodyMD5 = null;
-        $errorCode      = null;
-        $errorMessage   = null;
+        $errorCode = null;
+        $errorMessage = null;
 
         while ($xmlReader->read()) {
             switch ($xmlReader->nodeType) {
@@ -90,21 +84,20 @@ class SendMessageResponseItem
         }
     }
 
-
     public function isSucceed()
     {
         return $this->isSucceed;
     }
-
 
     public function getErrorCode()
     {
         return $this->errorCode;
     }
 
-
     public function getErrorMessage()
     {
         return $this->errorMessage;
     }
 }
+
+?>

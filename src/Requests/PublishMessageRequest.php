@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Requests;
 
 use Aliyun\MNS\Constants;
@@ -7,33 +6,29 @@ use Aliyun\MNS\Traits\MessagePropertiesForPublish;
 
 class PublishMessageRequest extends BaseRequest
 {
-
     use MessagePropertiesForPublish;
 
     private $topicName;
 
-
-    public function __construct($messageBody)
+    public function __construct($messageBody, $messageAttributes = null)
     {
         parent::__construct('post', null);
 
-        $this->topicName   = null;
+        $this->topicName = null;
         $this->messageBody = $messageBody;
+        $this->messageAttributes = $messageAttributes;
     }
-
 
     public function getTopicName()
     {
         return $this->topicName;
     }
 
-
     public function setTopicName($topicName)
     {
-        $this->topicName    = $topicName;
+        $this->topicName = $topicName;
         $this->resourcePath = 'topics/' . $topicName . '/messages';
     }
-
 
     public function generateBody()
     {
@@ -44,13 +39,13 @@ class PublishMessageRequest extends BaseRequest
         $this->writeMessagePropertiesForPublishXML($xmlWriter);
         $xmlWriter->endElement();
         $xmlWriter->endDocument();
-
         return $xmlWriter->outputMemory();
     }
-
 
     public function generateQueryString()
     {
         return null;
     }
 }
+
+?>

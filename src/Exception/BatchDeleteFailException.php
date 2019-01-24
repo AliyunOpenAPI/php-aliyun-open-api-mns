@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Exception;
 
 use Aliyun\MNS\Constants;
@@ -12,9 +11,7 @@ use Aliyun\MNS\Model\DeleteMessageErrorItem;
  */
 class BatchDeleteFailException extends MnsException
 {
-
     protected $deleteMessageErrorItems;
-
 
     public function __construct($code, $message, $previousException = null, $requestId = null, $hostId = null)
     {
@@ -23,15 +20,15 @@ class BatchDeleteFailException extends MnsException
         $this->deleteMessageErrorItems = array();
     }
 
-
     public function addDeleteMessageErrorItem(DeleteMessageErrorItem $item)
     {
         $this->deleteMessageErrorItems[] = $item;
     }
-
 
     public function getDeleteMessageErrorItems()
     {
         return $this->deleteMessageErrorItems;
     }
 }
+
+?>

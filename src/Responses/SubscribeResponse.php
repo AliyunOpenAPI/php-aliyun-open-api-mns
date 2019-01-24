@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
 use Aliyun\MNS\Common\XMLParser;
@@ -10,7 +9,6 @@ use Aliyun\MNS\Exception\SubscriptionAlreadyExistException;
 
 class SubscribeResponse extends BaseResponse
 {
-
     public function parseResponse($statusCode, $content)
     {
         $this->statusCode = $statusCode;
@@ -21,22 +19,23 @@ class SubscribeResponse extends BaseResponse
         }
     }
 
-
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
 
             if ($result['Code'] == Constants::INVALID_ARGUMENT) {
-                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new InvalidArgumentException($statusCode, $result['Message'], $exception, $result['Code'],
+                    $result['RequestId'], $result['HostId']);
             }
             if ($result['Code'] == Constants::SUBSCRIPTION_ALREADY_EXIST) {
-                throw new SubscriptionAlreadyExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+                throw new SubscriptionAlreadyExistException($statusCode, $result['Message'], $exception,
+                    $result['Code'], $result['RequestId'], $result['HostId']);
             }
-            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
+            throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'],
+                $result['HostId']);
         } catch (\Exception $e) {
             if ($exception != null) {
                 throw $exception;
@@ -50,3 +49,5 @@ class SubscribeResponse extends BaseResponse
         }
     }
 }
+
+?>

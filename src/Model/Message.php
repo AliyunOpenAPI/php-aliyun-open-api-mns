@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Model;
 
 use Aliyun\MNS\Constants;
@@ -7,35 +6,41 @@ use Aliyun\MNS\Traits\MessagePropertiesForReceive;
 
 class Message
 {
-
     use MessagePropertiesForReceive;
 
-
-    public function __construct($messageId, $messageBodyMD5, $messageBody, $enqueueTime, $nextVisibleTime, $firstDequeueTime, $dequeueCount, $priority, $receiptHandle)
-    {
-        $this->messageId        = $messageId;
-        $this->messageBodyMD5   = $messageBodyMD5;
-        $this->messageBody      = $messageBody;
-        $this->enqueueTime      = $enqueueTime;
-        $this->nextVisibleTime  = $nextVisibleTime;
+    public function __construct(
+        $messageId,
+        $messageBodyMD5,
+        $messageBody,
+        $enqueueTime,
+        $nextVisibleTime,
+        $firstDequeueTime,
+        $dequeueCount,
+        $priority,
+        $receiptHandle
+    ) {
+        $this->messageId = $messageId;
+        $this->messageBodyMD5 = $messageBodyMD5;
+        $this->messageBody = $messageBody;
+        $this->enqueueTime = $enqueueTime;
+        $this->nextVisibleTime = $nextVisibleTime;
         $this->firstDequeueTime = $firstDequeueTime;
-        $this->dequeueCount     = $dequeueCount;
-        $this->priority         = $priority;
-        $this->receiptHandle    = $receiptHandle;
+        $this->dequeueCount = $dequeueCount;
+        $this->priority = $priority;
+        $this->receiptHandle = $receiptHandle;
     }
 
-
-    static public function fromXML(\XMLReader $xmlReader)
+    static public function fromXML(\XMLReader $xmlReader, $base64)
     {
-        $messageId        = null;
-        $messageBodyMD5   = null;
-        $messageBody      = null;
-        $enqueueTime      = null;
-        $nextVisibleTime  = null;
+        $messageId = null;
+        $messageBodyMD5 = null;
+        $messageBody = null;
+        $enqueueTime = null;
+        $nextVisibleTime = null;
         $firstDequeueTime = null;
-        $dequeueCount     = null;
-        $priority         = null;
-        $receiptHandle    = null;
+        $dequeueCount = null;
+        $priority = null;
+        $receiptHandle = null;
 
         while ($xmlReader->read()) {
             switch ($xmlReader->nodeType) {
@@ -56,7 +61,11 @@ class Message
                         case Constants::MESSAGE_BODY:
                             $xmlReader->read();
                             if ($xmlReader->nodeType == \XMLReader::TEXT) {
-                                $messageBody = base64_decode($xmlReader->value);
+                                if ($base64 == true) {
+                                    $messageBody = base64_decode($xmlReader->value);
+                                } else {
+                                    $messageBody = $xmlReader->value;
+                                }
                             }
                             break;
                         case Constants::ENQUEUE_TIME:
@@ -99,16 +108,35 @@ class Message
                     break;
                 case \XMLReader::END_ELEMENT:
                     if ($xmlReader->name == 'Message') {
-                        $message = new Message($messageId, $messageBodyMD5, $messageBody, $enqueueTime, $nextVisibleTime, $firstDequeueTime, $dequeueCount, $priority, $receiptHandle);
-
+                        $message = new Message(
+                            $messageId,
+                            $messageBodyMD5,
+                            $messageBody,
+                            $enqueueTime,
+                            $nextVisibleTime,
+                            $firstDequeueTime,
+                            $dequeueCount,
+                            $priority,
+                            $receiptHandle);
                         return $message;
                     }
                     break;
             }
         }
 
-        $message = new Message($messageId, $messageBodyMD5, $messageBody, $enqueueTime, $nextVisibleTime, $firstDequeueTime, $dequeueCount, $priority, $receiptHandle);
+        $message = new Message(
+            $messageId,
+            $messageBodyMD5,
+            $messageBody,
+            $enqueueTime,
+            $nextVisibleTime,
+            $firstDequeueTime,
+            $dequeueCount,
+            $priority,
+            $receiptHandle);
 
         return $message;
     }
 }
+
+?>

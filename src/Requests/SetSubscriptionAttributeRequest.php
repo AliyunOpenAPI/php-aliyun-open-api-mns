@@ -1,5 +1,4 @@
 <?php
-
 namespace Aliyun\MNS\Requests;
 
 use Aliyun\MNS\Constants;
@@ -10,7 +9,8 @@ class SetSubscriptionAttributeRequest extends BaseRequest
 
     public function __construct(UpdateSubscriptionAttributes $attributes = null)
     {
-        parent::__construct('put', 'topics/' . $attributes->getTopicName() . '/subscriptions/' . $attributes->getSubscriptionName() . '?metaoverride=true');
+        parent::__construct('put',
+            'topics/' . $attributes->getTopicName() . '/subscriptions/' . $attributes->getSubscriptionName() . '?metaoverride=true');
 
         if ($attributes == null) {
             $attributes = new UpdateSubscriptionAttributes();
@@ -19,12 +19,10 @@ class SetSubscriptionAttributeRequest extends BaseRequest
         $this->attributes = $attributes;
     }
 
-
     public function getSubscriptionAttributes()
     {
         return $this->attributes;
     }
-
 
     public function generateBody()
     {
@@ -35,13 +33,13 @@ class SetSubscriptionAttributeRequest extends BaseRequest
         $this->attributes->writeXML($xmlWriter);
         $xmlWriter->endElement();
         $xmlWriter->endDocument();
-
         return $xmlWriter->outputMemory();
     }
-
 
     public function generateQueryString()
     {
         return null;
     }
 }
+
+?>
