@@ -18,7 +18,7 @@ class SubscriptionAttributes
     private $createTime;
     private $lastModifyTime;
 
-    public function 啊？啊？__construct(
+    public function __construct(
         $subscriptionName = null,
         $endpoint = null,
         $strategy = null,
