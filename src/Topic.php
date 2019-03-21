@@ -3,25 +3,26 @@
 namespace Aliyun\MNS;
 
 use Aliyun\MNS\Http\HttpClient;
-use Aliyun\MNS\Model\SubscriptionAttributes;
+use Aliyun\MNS\AsyncCallback;
 use Aliyun\MNS\Model\TopicAttributes;
+use Aliyun\MNS\Model\SubscriptionAttributes;
 use Aliyun\MNS\Model\UpdateSubscriptionAttributes;
-use Aliyun\MNS\Requests\GetSubscriptionAttributeRequest;
-use Aliyun\MNS\Requests\GetTopicAttributeRequest;
-use Aliyun\MNS\Requests\ListSubscriptionRequest;
-use Aliyun\MNS\Requests\PublishMessageRequest;
-use Aliyun\MNS\Requests\SetSubscriptionAttributeRequest;
 use Aliyun\MNS\Requests\SetTopicAttributeRequest;
-use Aliyun\MNS\Requests\SubscribeRequest;
-use Aliyun\MNS\Requests\UnsubscribeRequest;
-use Aliyun\MNS\Responses\GetSubscriptionAttributeResponse;
-use Aliyun\MNS\Responses\GetTopicAttributeResponse;
-use Aliyun\MNS\Responses\ListSubscriptionResponse;
-use Aliyun\MNS\Responses\PublishMessageResponse;
-use Aliyun\MNS\Responses\SetSubscriptionAttributeResponse;
 use Aliyun\MNS\Responses\SetTopicAttributeResponse;
+use Aliyun\MNS\Requests\GetTopicAttributeRequest;
+use Aliyun\MNS\Responses\GetTopicAttributeResponse;
+use Aliyun\MNS\Requests\PublishMessageRequest;
+use Aliyun\MNS\Responses\PublishMessageResponse;
+use Aliyun\MNS\Requests\SubscribeRequest;
 use Aliyun\MNS\Responses\SubscribeResponse;
+use Aliyun\MNS\Requests\UnsubscribeRequest;
 use Aliyun\MNS\Responses\UnsubscribeResponse;
+use Aliyun\MNS\Requests\GetSubscriptionAttributeRequest;
+use Aliyun\MNS\Responses\GetSubscriptionAttributeResponse;
+use Aliyun\MNS\Requests\SetSubscriptionAttributeRequest;
+use Aliyun\MNS\Responses\SetSubscriptionAttributeResponse;
+use Aliyun\MNS\Requests\ListSubscriptionRequest;
+use Aliyun\MNS\Responses\ListSubscriptionResponse;
 
 class Topic
 {
@@ -61,6 +62,32 @@ class Topic
         return $this->client->sendRequest($request, $response);
     }
 
+    public function generateQueueEndpoint($queueName)
+    {
+        return "acs:mns:" . $this->client->getRegion() . ":" . $this->client->getAccountId() . ":queues/" . $queueName;
+    }
+
+    public function generateMailEndpoint($mailAddress)
+    {
+        return "mail:directmail:" . $mailAddress;
+    }
+
+    public function generateSmsEndpoint($phone = null)
+    {
+        if ($phone)
+        {
+            return "sms:directsms:" . $phone;
+        }
+        else
+        {
+            return "sms:directsms:anonymous";
+        }
+    }
+
+    public function generateBatchSmsEndpoint()
+    {
+        return "sms:directsms:anonymous";
+    }
 
     public function publishMessage(PublishMessageRequest $request)
     {

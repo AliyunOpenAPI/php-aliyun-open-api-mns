@@ -3,29 +3,30 @@
 namespace Aliyun\MNS;
 
 use Aliyun\MNS\Http\HttpClient;
+use Aliyun\MNS\AsyncCallback;
 use Aliyun\MNS\Model\QueueAttributes;
-use Aliyun\MNS\Requests\BatchDeleteMessageRequest;
-use Aliyun\MNS\Requests\BatchPeekMessageRequest;
-use Aliyun\MNS\Requests\BatchReceiveMessageRequest;
-use Aliyun\MNS\Requests\BatchSendMessageRequest;
-use Aliyun\MNS\Requests\ChangeMessageVisibilityRequest;
-use Aliyun\MNS\Requests\DeleteMessageRequest;
-use Aliyun\MNS\Requests\GetQueueAttributeRequest;
-use Aliyun\MNS\Requests\PeekMessageRequest;
-use Aliyun\MNS\Requests\ReceiveMessageRequest;
-use Aliyun\MNS\Requests\SendMessageRequest;
 use Aliyun\MNS\Requests\SetQueueAttributeRequest;
-use Aliyun\MNS\Responses\BatchDeleteMessageResponse;
-use Aliyun\MNS\Responses\BatchPeekMessageResponse;
-use Aliyun\MNS\Responses\BatchReceiveMessageResponse;
-use Aliyun\MNS\Responses\BatchSendMessageResponse;
-use Aliyun\MNS\Responses\ChangeMessageVisibilityResponse;
-use Aliyun\MNS\Responses\DeleteMessageResponse;
-use Aliyun\MNS\Responses\GetQueueAttributeResponse;
-use Aliyun\MNS\Responses\PeekMessageResponse;
-use Aliyun\MNS\Responses\ReceiveMessageResponse;
-use Aliyun\MNS\Responses\SendMessageResponse;
 use Aliyun\MNS\Responses\SetQueueAttributeResponse;
+use Aliyun\MNS\Requests\GetQueueAttributeRequest;
+use Aliyun\MNS\Responses\GetQueueAttributeResponse;
+use Aliyun\MNS\Requests\SendMessageRequest;
+use Aliyun\MNS\Responses\SendMessageResponse;
+use Aliyun\MNS\Requests\PeekMessageRequest;
+use Aliyun\MNS\Responses\PeekMessageResponse;
+use Aliyun\MNS\Requests\ReceiveMessageRequest;
+use Aliyun\MNS\Responses\ReceiveMessageResponse;
+use Aliyun\MNS\Requests\DeleteMessageRequest;
+use Aliyun\MNS\Responses\DeleteMessageResponse;
+use Aliyun\MNS\Requests\ChangeMessageVisibilityRequest;
+use Aliyun\MNS\Responses\ChangeMessageVisibilityResponse;
+use Aliyun\MNS\Requests\BatchSendMessageRequest;
+use Aliyun\MNS\Responses\BatchSendMessageResponse;
+use Aliyun\MNS\Requests\BatchReceiveMessageRequest;
+use Aliyun\MNS\Responses\BatchReceiveMessageResponse;
+use Aliyun\MNS\Requests\BatchPeekMessageRequest;
+use Aliyun\MNS\Responses\BatchPeekMessageResponse;
+use Aliyun\MNS\Requests\BatchDeleteMessageRequest;
+use Aliyun\MNS\Responses\BatchDeleteMessageResponse;
 
 class Queue
 {
@@ -34,13 +35,25 @@ class Queue
 
     private $client;
 
+    // boolean, whether the message body will be encoded in base64
+    private $base64;
 
-    public function __construct(HttpClient $client, $queueName)
+    public function __construct(HttpClient $client, $queueName, $base64 = true)
     {
         $this->queueName = $queueName;
-        $this->client    = $client;
+        $this->client = $client;
+        $this->base64 = $base64;
     }
 
+    public function setBase64($base64)
+    {
+        $this->base64 = $base64;
+    }
+
+    public function isBase64()
+    {
+        return ($this->base64 == TRUE);
+    }
 
     public function getQueueName()
     {
@@ -107,6 +120,9 @@ class Queue
 
     /**
      * SendMessage, the messageBody will be automatically encoded in base64
+     *     If you do not need the message body to be encoded in Base64,
+     *     please specify the $base64 = FALSE in Queue
+     *
      * detail API sepcs:
      * https://docs.aliyun.com/?spm=#/pub/mns/api_reference/api_spec&message_operation
      *
@@ -122,6 +138,7 @@ class Queue
     public function sendMessage(SendMessageRequest $request)
     {
         $request->setQueueName($this->queueName);
+        $request->setBase64($this->base64);
         $response = new SendMessageResponse();
 
         return $this->client->sendRequest($request, $response);
@@ -138,7 +155,7 @@ class Queue
 
 
     /**
-     * PeekMessage, the messageBody will be automatically decoded as base64
+     * PeekMessage, the messageBody will be automatically decoded as base64 if the $base64 in Queue is TRUE
      * detail API sepcs:
      * https://docs.aliyun.com/?spm=#/pub/mns/api_reference/api_spec&message_operation
      *
@@ -151,7 +168,7 @@ class Queue
     public function peekMessage()
     {
         $request  = new PeekMessageRequest($this->queueName);
-        $response = new PeekMessageResponse();
+        $response = new PeekMessageResponse($this->base64);
 
         return $this->client->sendRequest($request, $response);
     }
@@ -160,7 +177,7 @@ class Queue
     public function peekMessageAsync(AsyncCallback $callback = null)
     {
         $request  = new PeekMessageRequest($this->queueName);
-        $response = new PeekMessageResponse();
+        $response = new PeekMessageResponse($this->base64);
 
         return $this->client->sendRequestAsync($request, $response, $callback);
     }
@@ -182,7 +199,7 @@ class Queue
     public function receiveMessage($waitSeconds = null)
     {
         $request  = new ReceiveMessageRequest($this->queueName, $waitSeconds);
-        $response = new ReceiveMessageResponse();
+        $response = new ReceiveMessageResponse($this->base64);
 
         return $this->client->sendRequest($request, $response);
     }
@@ -191,7 +208,7 @@ class Queue
     public function receiveMessageAsync(AsyncCallback $callback = null)
     {
         $request  = new ReceiveMessageRequest($this->queueName);
-        $response = new ReceiveMessageResponse();
+        $response = new ReceiveMessageResponse($this->base64);
 
         return $this->client->sendRequestAsync($request, $response, $callback);
     }
@@ -255,6 +272,9 @@ class Queue
 
     /**
      * BatchSendMessage, message body will be automatically encoded in base64
+     *     If you do not need the message body to be encoded in Base64,
+     *     please specify the $base64 = FALSE in Queue
+     *
      * detail API sepcs:
      * https://docs.aliyun.com/?spm=#/pub/mns/api_reference/api_spec&message_operation
      *
@@ -272,6 +292,7 @@ class Queue
     public function batchSendMessage(BatchSendMessageRequest $request)
     {
         $request->setQueueName($this->queueName);
+        $request->setBase64($this->base64);
         $response = new BatchSendMessageResponse();
 
         return $this->client->sendRequest($request, $response);
@@ -281,6 +302,7 @@ class Queue
     public function batchSendMessageAsync(BatchSendMessageRequest $request, AsyncCallback $callback = null)
     {
         $request->setQueueName($this->queueName);
+        $request->setBase64($this->base64);
         $response = new BatchSendMessageResponse();
 
         return $this->client->sendRequestAsync($request, $response, $callback);
@@ -288,7 +310,7 @@ class Queue
 
 
     /**
-     * BatchReceiveMessage, message body will be automatically decoded as base64
+     * BatchReceiveMessage, message body will be automatically decoded as base64 if $base64 = TRUE in Queue
      * detail API sepcs:
      * https://docs.aliyun.com/?spm=#/pub/mns/api_reference/api_spec&message_operation
      *
@@ -314,14 +336,14 @@ class Queue
     public function batchReceiveMessageAsync(BatchReceiveMessageRequest $request, AsyncCallback $callback = null)
     {
         $request->setQueueName($this->queueName);
-        $response = new BatchReceiveMessageResponse();
+        $response = new BatchReceiveMessageResponse($this->base64);
 
         return $this->client->sendRequestAsync($request, $response, $callback);
     }
 
 
     /**
-     * BatchPeekMessage, message body will be automatically decoded as base64
+     * BatchPeekMessage, message body will be automatically decoded as base64 is $base64 = TRUE in Queue
      * detail API sepcs:
      * https://docs.aliyun.com/?spm=#/pub/mns/api_reference/api_spec&message_operation
      *
@@ -338,7 +360,7 @@ class Queue
     public function batchPeekMessage($numOfMessages)
     {
         $request  = new BatchPeekMessageRequest($this->queueName, $numOfMessages);
-        $response = new BatchPeekMessageResponse();
+        $response = new BatchPeekMessageResponse($this->base64);
 
         return $this->client->sendRequest($request, $response);
     }
@@ -347,7 +369,7 @@ class Queue
     public function batchPeekMessageAsync($numOfMessages, AsyncCallback $callback = null)
     {
         $request  = new BatchPeekMessageRequest($this->queueName, $numOfMessages);
-        $response = new BatchPeekMessageResponse();
+        $response = new BatchPeekMessageResponse($this->base64);
 
         return $this->client->sendRequestAsync($request, $response, $callback);
     }

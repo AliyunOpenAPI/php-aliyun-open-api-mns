@@ -7,7 +7,7 @@ class Config
 
     //private $maxAttempts;
     private $proxy;  // http://username:password@192.168.16.1:10
-
+    private $connectTimeout;
     private $requestTimeout;
 
     private $expectContinue;
@@ -17,7 +17,8 @@ class Config
     {
         // $this->maxAttempts = 3;
         $this->proxy          = null;
-        $this->requestTimeout = 6; // 6 seconds
+        $this->requestTimeout = 35; // 35 seconds
+        $this->connectTimeout = 3;  // 3 seconds
         $this->expectContinue = false;
     }
 
@@ -57,6 +58,15 @@ class Config
         $this->requestTimeout = $requestTimeout;
     }
 
+    public function setConnectTimeout($connectTimeout)
+    {
+        $this->connectTimeout = $connectTimeout;
+    }
+
+    public function getConnectTimeout()
+    {
+        return $this->connectTimeout;
+    }
 
     public function getExpectContinue()
     {

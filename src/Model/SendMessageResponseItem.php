@@ -33,6 +33,20 @@ class SendMessageResponseItem
         }
     }
 
+    public function isSucceed()
+    {
+        return $this->isSucceed;
+    }
+
+    public function getErrorCode()
+    {
+        return $this->errorCode;
+    }
+
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
+    }
 
     static public function fromXML($xmlReader)
     {
@@ -90,21 +104,4 @@ class SendMessageResponseItem
         }
     }
 
-
-    public function isSucceed()
-    {
-        return $this->isSucceed;
-    }
-
-
-    public function getErrorCode()
-    {
-        return $this->errorCode;
-    }
-
-
-    public function getErrorMessage()
-    {
-        return $this->errorMessage;
-    }
 }

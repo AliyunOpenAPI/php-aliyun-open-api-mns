@@ -27,32 +27,27 @@ abstract class BaseRequest
 
 
     abstract public function generateQueryString();
-
-
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-
+    
     public function setBody($body)
     {
         $this->body = $body;
     }
-
-
-    public function getQueryString()
+    
+    public function getBody()
     {
-        return $this->queryString;
+        return $this->body;
     }
-
-
+    
     public function setQueryString($queryString)
     {
         $this->queryString = $queryString;
     }
 
-
+    public function getQueryString()
+    {
+        return $this->queryString;
+    }
+    
     public function isHeaderSet($header)
     {
         return isset( $this->headers[$header] );

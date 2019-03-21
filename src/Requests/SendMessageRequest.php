@@ -12,8 +12,10 @@ class SendMessageRequest extends BaseRequest
 
     private $queueName;
 
+    // boolean, whether the message body will be encoded in base64
+    private $base64;
 
-    public function __construct($messageBody, $delaySeconds = null, $priority = null)
+    public function __construct($messageBody, $delaySeconds = NULL, $priority = NULL, $base64 = TRUE)
     {
         parent::__construct('post', null);
 
@@ -21,14 +23,18 @@ class SendMessageRequest extends BaseRequest
         $this->messageBody  = $messageBody;
         $this->delaySeconds = $delaySeconds;
         $this->priority     = $priority;
+        $this->base64       = $base64;
     }
 
-
-    public function getQueueName()
+    public function setBase64($base64)
     {
-        return $this->queueName;
+        $this->base64 = $base64;
     }
 
+    public function isBase64()
+    {
+        return ($this->base64 == TRUE);
+    }
 
     public function setQueueName($queueName)
     {
@@ -36,6 +42,10 @@ class SendMessageRequest extends BaseRequest
         $this->resourcePath = 'queues/' . $queueName . '/messages';
     }
 
+    public function getQueueName()
+    {
+        return $this->queueName;
+    }
 
     public function generateBody()
     {
@@ -43,7 +53,7 @@ class SendMessageRequest extends BaseRequest
         $xmlWriter->openMemory();
         $xmlWriter->startDocument("1.0", "UTF-8");
         $xmlWriter->startElementNS(null, "Message", Constants::MNS_XML_NAMESPACE);
-        $this->writeMessagePropertiesForSendXML($xmlWriter);
+        $this->writeMessagePropertiesForSendXML($xmlWriter, $this->base64);
         $xmlWriter->endElement();
         $xmlWriter->endDocument();
 

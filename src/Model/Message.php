@@ -25,7 +25,7 @@ class Message
     }
 
 
-    static public function fromXML(\XMLReader $xmlReader)
+    static public function fromXML(\XMLReader $xmlReader, $base64)
     {
         $messageId        = null;
         $messageBodyMD5   = null;
@@ -56,7 +56,11 @@ class Message
                         case Constants::MESSAGE_BODY:
                             $xmlReader->read();
                             if ($xmlReader->nodeType == \XMLReader::TEXT) {
-                                $messageBody = base64_decode($xmlReader->value);
+                                if ($base64 == TRUE) {
+                                    $messageBody = base64_decode($xmlReader->value);
+                                } else {
+                                    $messageBody = $xmlReader->value;
+                                }
                             }
                             break;
                         case Constants::ENQUEUE_TIME:

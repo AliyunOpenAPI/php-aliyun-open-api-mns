@@ -2,8 +2,8 @@
 
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Exception\MnsException;
+use Aliyun\MNS\Common\XMLParser;
 
 class UnsubscribeResponse extends BaseResponse
 {
@@ -27,9 +27,8 @@ class UnsubscribeResponse extends BaseResponse
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
             throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
         } catch (\Exception $e) {

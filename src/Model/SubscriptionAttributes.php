@@ -41,6 +41,81 @@ class SubscriptionAttributes
         $this->lastModifyTime = $lastModifyTime;
     }
 
+    public function getEndpoint()
+    {
+        return $this->endpoint;
+    }
+
+    public function setEndpoint($endpoint)
+    {
+        $this->endpoint = $endpoint;
+    }
+
+    public function getStrategy()
+    {
+        return $this->strategy;
+    }
+
+    public function setStrategy($strategy)
+    {
+        $this->strategy = $strategy;
+    }
+
+    public function getContentFormat()
+    {
+        return $this->contentFormat;
+    }
+
+    public function setContentFormat($contentFormat)
+    {
+        $this->contentFormat = $contentFormat;
+    }
+
+    public function getTopicName()
+    {
+        return $this->topicName;
+    }
+
+    public function setTopicName($topicName)
+    {
+        $this->topicName = $topicName;
+    }
+
+    public function getTopicOwner()
+    {
+        return $this->topicOwner;
+    }
+
+    public function getSubscriptionName()
+    {
+        return $this->subscriptionName;
+    }
+
+    public function getCreateTime()
+    {
+        return $this->createTime;
+    }
+
+    public function getLastModifyTime()
+    {
+        return $this->lastModifyTime;
+    }
+
+    public function writeXML(\XMLWriter $xmlWriter)
+    {
+        if ($this->endpoint != NULL)
+        {
+            $xmlWriter->writeElement(Constants::ENDPOINT, $this->endpoint);
+        }
+        if ($this->strategy != NULL)
+        {
+            $xmlWriter->writeElement(Constants::STRATEGY, $this->strategy);
+        }
+        if ($this->contentFormat != NULL)
+        {
+            $xmlWriter->writeElement(Constants::CONTENT_FORMAT, $this->contentFormat);
+        }
+    }
 
     static public function fromXML(\XMLReader $xmlReader)
     {
@@ -75,7 +150,7 @@ class SubscriptionAttributes
                     case 'Endpoint':
                         $xmlReader->read();
                         if ($xmlReader->nodeType == \XMLReader::TEXT) {
-                            $subscriptionName = $xmlReader->value;
+                            $endpoint = $xmlReader->value;
                         }
                         break;
                     case 'NotifyStrategy':
@@ -111,89 +186,4 @@ class SubscriptionAttributes
         return $attributes;
     }
 
-
-    public function getEndpoint()
-    {
-        return $this->endpoint;
-    }
-
-
-    public function setEndpoint($endpoint)
-    {
-        $this->endpoint = $endpoint;
-    }
-
-
-    public function getStrategy()
-    {
-        return $this->strategy;
-    }
-
-
-    public function setStrategy($strategy)
-    {
-        $this->strategy = $strategy;
-    }
-
-
-    public function getContentFormat()
-    {
-        return $this->contentFormat;
-    }
-
-
-    public function setContentFormat($contentFormat)
-    {
-        $this->contentFormat = $contentFormat;
-    }
-
-
-    public function getTopicName()
-    {
-        return $this->topicName;
-    }
-
-
-    public function setTopicName($topicName)
-    {
-        $this->topicName = $topicName;
-    }
-
-
-    public function getTopicOwner()
-    {
-        return $this->topicOwner;
-    }
-
-
-    public function getSubscriptionName()
-    {
-        return $this->subscriptionName;
-    }
-
-
-    public function getCreateTime()
-    {
-        return $this->createTime;
-    }
-
-
-    public function getLastModifyTime()
-    {
-        return $this->lastModifyTime;
-    }
-
-
-    public function writeXML(\XMLWriter $xmlWriter)
-    {
-        if ($this->endpoint != null) {
-            $xmlWriter->writeElement(Constants::ENDPOINT, $this->endpoint);
-        }
-        if ($this->strategy != null) {
-            $xmlWriter->writeElement(Constants::STRATEGY, $this->strategy);
-        }
-        if ($this->contentFormat != null) {
-            $xmlWriter->writeElement(Constants::CONTENT_FORMAT, $this->contentFormat);
-        }
-    }
 }

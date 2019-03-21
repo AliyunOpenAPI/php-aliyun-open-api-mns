@@ -19,10 +19,10 @@ class SendMessageRequestItem
     }
 
 
-    public function writeXML(\XMLWriter $xmlWriter)
+    public function writeXML(\XMLWriter $xmlWriter, $base64)
     {
         $xmlWriter->startELement('Message');
-        $this->writeMessagePropertiesForSendXML($xmlWriter);
+        $this->writeMessagePropertiesForSendXML($xmlWriter, $base64);
         $xmlWriter->endElement();
     }
 }

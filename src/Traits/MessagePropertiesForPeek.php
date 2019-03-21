@@ -22,19 +22,6 @@ trait MessagePropertiesForPeek
     protected $priority;
 
 
-    public function readMessagePropertiesForPeekXML(\XMLReader $xmlReader)
-    {
-        $message                = Message::fromXML($xmlReader);
-        $this->messageId        = $message->getMessageId();
-        $this->messageBodyMD5   = $message->getMessageBodyMD5();
-        $this->messageBody      = $message->getMessageBody();
-        $this->enqueueTime      = $message->getEnqueueTime();
-        $this->nextVisibleTime  = $message->getNextVisibleTime();
-        $this->firstDequeueTime = $message->getFirstDequeueTime();
-        $this->dequeueCount     = $message->getDequeueCount();
-        $this->priority         = $message->getPriority();
-    }
-
 
     public function getMessageBody()
     {
@@ -70,4 +57,18 @@ trait MessagePropertiesForPeek
     {
         return $this->priority;
     }
+
+    public function readMessagePropertiesForPeekXML(\XMLReader $xmlReader, $base64)
+    {
+        $message                = Message::fromXML($xmlReader, $base64);
+        $this->messageId        = $message->getMessageId();
+        $this->messageBodyMD5   = $message->getMessageBodyMD5();
+        $this->messageBody      = $message->getMessageBody();
+        $this->enqueueTime      = $message->getEnqueueTime();
+        $this->nextVisibleTime  = $message->getNextVisibleTime();
+        $this->firstDequeueTime = $message->getFirstDequeueTime();
+        $this->dequeueCount     = $message->getDequeueCount();
+        $this->priority         = $message->getPriority();
+    }
+
 }

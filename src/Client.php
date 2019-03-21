@@ -2,19 +2,27 @@
 
 namespace Aliyun\MNS;
 
+use Aliyun\MNS\Queue;
+use Aliyun\MNS\Config;
 use Aliyun\MNS\Http\HttpClient;
+use Aliyun\MNS\AsyncCallback;
+use Aliyun\MNS\Model\AccountAttributes;
 use Aliyun\MNS\Requests\CreateQueueRequest;
-use Aliyun\MNS\Requests\CreateTopicRequest;
-use Aliyun\MNS\Requests\DeleteQueueRequest;
-use Aliyun\MNS\Requests\DeleteTopicRequest;
-use Aliyun\MNS\Requests\ListQueueRequest;
-use Aliyun\MNS\Requests\ListTopicRequest;
 use Aliyun\MNS\Responses\CreateQueueResponse;
-use Aliyun\MNS\Responses\CreateTopicResponse;
-use Aliyun\MNS\Responses\DeleteQueueResponse;
-use Aliyun\MNS\Responses\DeleteTopicResponse;
+use Aliyun\MNS\Requests\ListQueueRequest;
 use Aliyun\MNS\Responses\ListQueueResponse;
+use Aliyun\MNS\Requests\DeleteQueueRequest;
+use Aliyun\MNS\Responses\DeleteQueueResponse;
+use Aliyun\MNS\Requests\CreateTopicRequest;
+use Aliyun\MNS\Responses\CreateTopicResponse;
+use Aliyun\MNS\Requests\DeleteTopicRequest;
+use Aliyun\MNS\Responses\DeleteTopicResponse;
+use Aliyun\MNS\Requests\ListTopicRequest;
 use Aliyun\MNS\Responses\ListTopicResponse;
+use Aliyun\MNS\Requests\GetAccountAttributesRequest;
+use Aliyun\MNS\Responses\GetAccountAttributesResponse;
+use Aliyun\MNS\Requests\SetAccountAttributesRequest;
+use Aliyun\MNS\Responses\SetAccountAttributesResponse;
 
 /**
  * Please refer to
@@ -48,13 +56,14 @@ class Client
      * Returns a queue reference for operating on the queue
      * this function does not create the queue automatically.
      *
-     * @param string $queueName :  the queue name
+     * @param string $queueName:  the queue name
+     * @param bool $base64: whether the message in queue will be base64 encoded
      *
      * @return Queue $queue: the Queue instance
      */
-    public function getQueueRef($queueName)
+    public function getQueueRef($queueName, $base64 = true)
     {
-        return new Queue($this->client, $queueName);
+        return new Queue($this->client, $queueName, $base64);
     }
 
 
@@ -208,4 +217,49 @@ class Client
 
         return $this->client->sendRequest($request, $response);
     }
+
+
+    /**
+     * Query the AccountAttributes
+     *
+     * @return GetAccountAttributesResponse: the response containing topicNames
+     * @throws MnsException if any exception happends
+     */
+    public function getAccountAttributes()
+    {
+        $request = new GetAccountAttributesRequest();
+        $response = new GetAccountAttributesResponse();
+        return $this->client->sendRequest($request, $response);
+    }
+
+    public function getAccountAttributesAsync(AsyncCallback $callback = NULL)
+    {
+        $request = new GetAccountAttributesRequest();
+        $response = new GetAccountAttributesResponse();
+        return $this->client->sendRequestAsync($request, $response, $callback);
+    }
+
+    /**
+     * Set the AccountAttributes
+     *
+     * @param AccountAttributes $attributes: the AccountAttributes to set
+     *
+     * @return SetAccountAttributesResponse: the response
+     *
+     * @throws MnsException if any exception happends
+     */
+    public function setAccountAttributes(AccountAttributes $attributes)
+    {
+        $request = new SetAccountAttributesRequest($attributes);
+        $response = new SetAccountAttributesResponse();
+        return $this->client->sendRequest($request, $response);
+    }
+
+    public function setAccountAttributesAsync(AccountAttributes $attributes, AsyncCallback $callback = null)
+    {
+        $request = new SetAccountAttributesRequest($attributes);
+        $response = new SetAccountAttributesResponse();
+        return $this->client->sendRequestAsync($request, $response, $callback);
+    }
+
 }

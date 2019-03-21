@@ -21,17 +21,15 @@ class BatchReceiveMessageRequest extends BaseRequest
         $this->waitSeconds   = $waitSeconds;
     }
 
-
-    public function getQueueName()
-    {
-        return $this->queueName;
-    }
-
-
     public function setQueueName($queueName)
     {
         $this->queueName    = $queueName;
         $this->resourcePath = 'queues/' . $queueName . '/messages';
+    }
+
+    public function getQueueName()
+    {
+        return $this->queueName;
     }
 
 

@@ -2,11 +2,11 @@
 
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Constants;
-use Aliyun\MNS\Exception\InvalidArgumentException;
 use Aliyun\MNS\Exception\MnsException;
 use Aliyun\MNS\Exception\TopicAlreadyExistException;
+use Aliyun\MNS\Exception\InvalidArgumentException;
+use Aliyun\MNS\Common\XMLParser;
 
 class CreateTopicResponse extends BaseResponse
 {
@@ -34,9 +34,8 @@ class CreateTopicResponse extends BaseResponse
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
 
             if ($result['Code'] == Constants::INVALID_ARGUMENT) {

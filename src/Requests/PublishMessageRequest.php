@@ -12,21 +12,14 @@ class PublishMessageRequest extends BaseRequest
 
     private $topicName;
 
-
-    public function __construct($messageBody)
+    public function __construct($messageBody, $messageAttributes = NULL)
     {
         parent::__construct('post', null);
 
         $this->topicName   = null;
         $this->messageBody = $messageBody;
+        $this->messageAttributes = $messageAttributes;
     }
-
-
-    public function getTopicName()
-    {
-        return $this->topicName;
-    }
-
 
     public function setTopicName($topicName)
     {
@@ -34,6 +27,10 @@ class PublishMessageRequest extends BaseRequest
         $this->resourcePath = 'topics/' . $topicName . '/messages';
     }
 
+    public function getTopicName()
+    {
+        return $this->topicName;
+    }
 
     public function generateBody()
     {

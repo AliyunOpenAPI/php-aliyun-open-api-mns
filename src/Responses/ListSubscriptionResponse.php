@@ -2,8 +2,8 @@
 
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Exception\MnsException;
+use Aliyun\MNS\Common\XMLParser;
 
 class ListSubscriptionResponse extends BaseResponse
 {
@@ -48,9 +48,8 @@ class ListSubscriptionResponse extends BaseResponse
         }
 
         $this->succeed = true;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             while ($xmlReader->read()) {
                 if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
                     switch ($xmlReader->name) {
@@ -81,9 +80,8 @@ class ListSubscriptionResponse extends BaseResponse
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
 
             throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);

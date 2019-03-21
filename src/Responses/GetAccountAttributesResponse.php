@@ -1,36 +1,29 @@
 <?php
-
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Constants;
-use Aliyun\MNS\Model\TopicAttributes;
+use Aliyun\MNS\Model\AccountAttributes;
 use Aliyun\MNS\Exception\MnsException;
-use Aliyun\MNS\Exception\TopicNotExistException;
 use Aliyun\MNS\Common\XMLParser;
 
-class GetTopicAttributeResponse extends BaseResponse
+class GetAccountAttributesResponse extends BaseResponse
 {
-
     private $attributes;
-
 
     public function __construct()
     {
-        $this->attributes = null;
+        $this->attributes = NULL;
     }
 
-
-    public function getTopicAttributes()
+    public function getAccountAttributes()
     {
         return $this->attributes;
     }
-
 
     public function parseResponse($statusCode, $content)
     {
         $this->statusCode = $statusCode;
         if ($statusCode == 200) {
-            $this->succeed = true;
+            $this->succeed = TRUE;
         } else {
             $this->parseErrorResponse($statusCode, $content);
         }
@@ -38,29 +31,28 @@ class GetTopicAttributeResponse extends BaseResponse
         $xmlReader = $this->loadXmlContent($content);
 
         try {
-            $this->attributes = TopicAttributes::fromXML($xmlReader);
+            $this->attributes = AccountAttributes::fromXML($xmlReader);
         } catch (\Exception $e) {
             throw new MnsException($statusCode, $e->getMessage(), $e);
         } catch (\Throwable $t) {
             throw new MnsException($statusCode, $t->getMessage());
         }
+
     }
 
-
-    public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
+    public function parseErrorResponse($statusCode, $content, MnsException $exception = NULL)
     {
-        $this->succeed = false;
-        $xmlReader     = $this->loadXmlContent($content);
+        $this->succeed = FALSE;
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
             $result = XMLParser::parseNormalError($xmlReader);
-            if ($result['Code'] == Constants::TOPIC_NOT_EXIST) {
-                throw new TopicNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
-            }
+
             throw new MnsException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
         } catch (\Exception $e) {
-            if ($exception != null) {
+            if ($exception != NULL) {
                 throw $exception;
-            } elseif ($e instanceof MnsException) {
+            } elseif($e instanceof MnsException) {
                 throw $e;
             } else {
                 throw new MnsException($statusCode, $e->getMessage());

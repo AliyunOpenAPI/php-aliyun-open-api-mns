@@ -2,21 +2,26 @@
 
 namespace Aliyun\MNS\Http;
 
-use Aliyun\MNS\AsyncCallback;
 use Aliyun\MNS\Config;
 use Aliyun\MNS\Constants;
 use Aliyun\MNS\Exception\MnsException;
 use Aliyun\MNS\Requests\BaseRequest;
 use Aliyun\MNS\Responses\BaseResponse;
-use Aliyun\MNS\Responses\MnsPromise;
 use Aliyun\MNS\Signature\Signature;
-use GuzzleHttp\Exception\TransferException;
+use Aliyun\MNS\AsyncCallback;
+use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Exception\TransferException;
+use Aliyun\MNS\Responses\MnsPromise;
 
 class HttpClient
 {
 
     private $client;
+
+    private $region;
+
+    private $accountId;
 
     private $accessId;
 
@@ -39,13 +44,37 @@ class HttpClient
                     'Host' => $endPoint
                 ],
                 'proxy'   => $config->getProxy(),
-                'expect'  => $config->getExpectContinue(),
-                'timeout' => $config->getRequestTimeout()
+                'expect'  => $config->getExpectContinue()
             ]
         ]);
+        $this->requestTimeout = $config->getRequestTimeout();
+        $this->connectTimeout = $config->getConnectTimeout();
         $this->securityToken = $securityToken;
+        $this->endpoint = $endPoint;
+        $this->parseEndpoint();
     }
 
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    public function getAccountId()
+    {
+        return $this->accountId;
+    }
+
+    // This function is for SDK internal use
+    private function parseEndpoint()
+    {
+        $pieces = explode("//", $this->endpoint);
+        $host = end($pieces);
+
+        $host_pieces = explode(".", $host);
+        $this->accountId = $host_pieces[0];
+        $region_pieces = explode("-internal", $host_pieces[2]);
+        $this->region = $region_pieces[0];
+    }
 
     private function addRequiredHeaders(BaseRequest &$request)
     {
@@ -102,6 +131,9 @@ class HttpClient
         if ($body != null) {
             $parameters['body'] = $body;
         }
+
+        $parameters['timeout'] = $this->requestTimeout;
+        $parameters['connect_timeout'] = $this->connectTimeout;
 
         $request = new Request(strtoupper($request->getMethod()), $request->getResourcePath(), $request->getHeaders());
         try {

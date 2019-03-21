@@ -12,21 +12,27 @@ class BatchSendMessageRequest extends BaseRequest
 
     protected $sendMessageRequestItems;
 
+    // boolean, whether the message body will be encoded in base64
+    protected $base64;
 
-    public function __construct(array $sendMessageRequestItems)
+    public function __construct(array $sendMessageRequestItems, $base64 = TRUE)
     {
         parent::__construct('post', null);
 
         $this->queueName               = null;
         $this->sendMessageRequestItems = $sendMessageRequestItems;
+        $this->base64 = $base64;
     }
 
-
-    public function getQueueName()
+    public function setBase64($base64)
     {
-        return $this->queueName;
+        $this->base64 = $base64;
     }
 
+    public function isBase64()
+    {
+        return ($this->base64 == TRUE);
+    }
 
     public function setQueueName($queueName)
     {
@@ -34,6 +40,10 @@ class BatchSendMessageRequest extends BaseRequest
         $this->resourcePath = 'queues/' . $queueName . '/messages';
     }
 
+    public function getQueueName()
+    {
+        return $this->queueName;
+    }
 
     public function getSendMessageRequestItems()
     {
@@ -54,7 +64,7 @@ class BatchSendMessageRequest extends BaseRequest
         $xmlWriter->startDocument("1.0", "UTF-8");
         $xmlWriter->startElementNS(null, "Messages", Constants::MNS_XML_NAMESPACE);
         foreach ($this->sendMessageRequestItems as $item) {
-            $item->writeXML($xmlWriter);
+            $item->writeXML($xmlWriter, $this->base64);
         }
         $xmlWriter->endElement();
         $xmlWriter->endDocument();

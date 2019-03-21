@@ -2,8 +2,9 @@
 
 namespace Aliyun\MNS\Responses;
 
-use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Promise\PromiseInterface;
+use Aliyun\MNS\Exception\MnsException;
+use GuzzleHttp\Exception\TransferException;
 use Psr\Http\Message\ResponseInterface;
 
 class MnsPromise

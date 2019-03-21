@@ -2,14 +2,15 @@
 
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Constants;
+use Aliyun\MNS\Exception\MnsException;
 use Aliyun\MNS\Exception\BatchSendFailException;
+use Aliyun\MNS\Exception\QueueNotExistException;
 use Aliyun\MNS\Exception\InvalidArgumentException;
 use Aliyun\MNS\Exception\MalformedXMLException;
-use Aliyun\MNS\Exception\MnsException;
-use Aliyun\MNS\Exception\QueueNotExistException;
+use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Model\SendMessageResponseItem;
+use Aliyun\MNS\Traits\MessageIdAndMD5;
 
 class BatchSendMessageResponse extends BaseResponse
 {
@@ -38,12 +39,11 @@ class BatchSendMessageResponse extends BaseResponse
             $this->parseErrorResponse($statusCode, $content);
         }
 
-        $xmlReader = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             while ($xmlReader->read()) {
                 if ($xmlReader->nodeType == \XMLReader::ELEMENT && $xmlReader->name == 'Message') {
-                    $sendMessageResponseItems[] = SendMessageResponseItem::fromXML($xmlReader);
+                    $this->sendMessageResponseItems[] = SendMessageResponseItem::fromXML($xmlReader);
                 }
             }
         } catch (\Exception $e) {
@@ -57,9 +57,8 @@ class BatchSendMessageResponse extends BaseResponse
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             while ($xmlReader->read()) {
                 if ($xmlReader->nodeType == \XMLReader::ELEMENT) {
                     switch ($xmlReader->name) {

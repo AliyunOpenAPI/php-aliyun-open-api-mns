@@ -2,11 +2,12 @@
 
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Constants;
+use Aliyun\MNS\Model\QueueAttributes;
 use Aliyun\MNS\Exception\MnsException;
 use Aliyun\MNS\Exception\QueueNotExistException;
-use Aliyun\MNS\Model\QueueAttributes;
+use Aliyun\MNS\Exception\InvalidArgumentException;
+use Aliyun\MNS\Common\XMLParser;
 
 class GetQueueAttributeResponse extends BaseResponse
 {
@@ -35,9 +36,9 @@ class GetQueueAttributeResponse extends BaseResponse
             $this->parseErrorResponse($statusCode, $content);
         }
 
-        $xmlReader = new \XMLReader();
+        $xmlReader = $this->loadXmlContent($content);
+
         try {
-            $xmlReader->XML($content);
             $this->attributes = QueueAttributes::fromXML($xmlReader);
         } catch (\Exception $e) {
             throw new MnsException($statusCode, $e->getMessage(), $e);
@@ -51,9 +52,8 @@ class GetQueueAttributeResponse extends BaseResponse
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
             if ($result['Code'] == Constants::QUEUE_NOT_EXIST) {
                 throw new QueueNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);

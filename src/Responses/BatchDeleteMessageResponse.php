@@ -2,13 +2,13 @@
 
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Constants;
-use Aliyun\MNS\Exception\BatchDeleteFailException;
-use Aliyun\MNS\Exception\InvalidArgumentException;
 use Aliyun\MNS\Exception\MnsException;
 use Aliyun\MNS\Exception\QueueNotExistException;
+use Aliyun\MNS\Exception\InvalidArgumentException;
+use Aliyun\MNS\Exception\BatchDeleteFailException;
 use Aliyun\MNS\Exception\ReceiptHandleErrorException;
+use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Model\DeleteMessageErrorItem;
 
 class BatchDeleteMessageResponse extends BaseResponse
@@ -33,7 +33,8 @@ class BatchDeleteMessageResponse extends BaseResponse
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
+
         try {
             $xmlReader->XML($content);
             while ($xmlReader->read()) {

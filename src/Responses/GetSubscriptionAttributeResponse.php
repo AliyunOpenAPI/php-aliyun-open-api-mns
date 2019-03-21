@@ -2,11 +2,11 @@
 
 namespace Aliyun\MNS\Responses;
 
-use Aliyun\MNS\Common\XMLParser;
 use Aliyun\MNS\Constants;
+use Aliyun\MNS\Model\SubscriptionAttributes;
 use Aliyun\MNS\Exception\MnsException;
 use Aliyun\MNS\Exception\SubscriptionNotExistException;
-use Aliyun\MNS\Model\SubscriptionAttributes;
+use Aliyun\MNS\Common\XMLParser;
 
 class GetSubscriptionAttributeResponse extends BaseResponse
 {
@@ -35,9 +35,10 @@ class GetSubscriptionAttributeResponse extends BaseResponse
             $this->parseErrorResponse($statusCode, $content);
         }
 
-        $xmlReader = new \XMLReader();
-        try {
-            $xmlReader->XML($content);
+        $xmlReader = $this->loadXmlContent($content);
+
+        try
+        {
             $this->attributes = SubscriptionAttributes::fromXML($xmlReader);
         } catch (\Exception $e) {
             throw new MnsException($statusCode, $e->getMessage(), $e);
@@ -50,9 +51,8 @@ class GetSubscriptionAttributeResponse extends BaseResponse
     public function parseErrorResponse($statusCode, $content, MnsException $exception = null)
     {
         $this->succeed = false;
-        $xmlReader     = new \XMLReader();
+        $xmlReader     = $this->loadXmlContent($content);
         try {
-            $xmlReader->XML($content);
             $result = XMLParser::parseNormalError($xmlReader);
             if ($result['Code'] == Constants::SUBSCRIPTION_NOT_EXIST) {
                 throw new SubscriptionNotExistException($statusCode, $result['Message'], $exception, $result['Code'], $result['RequestId'], $result['HostId']);
